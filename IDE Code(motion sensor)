@@ -1,0 +1,28 @@
+int inputPin = D0; 
+int ledPin = D1;                
+int pirState = LOW;             
+int val = 0;                    
+
+void setup() {
+    pinMode(ledPin, OUTPUT);
+    pinMode(inputPin, INPUT);     
+}
+
+void loop() {
+    val = digitalRead(inputPin);  
+    if (val == HIGH) {            
+        digitalWrite(ledPin, HIGH);  
+    
+        if (pirState == LOW) {
+        Particle.publish("motion_detected_argon", "touch");
+        pirState = HIGH;
+        digitalWrite(ledPin, LOW);
+        }
+    digitalWrite(ledPin, LOW);
+    } else {
+        digitalWrite(ledPin, LOW);
+        if (pirState == HIGH){
+        pirState = LOW;
+        }
+    }
+}
