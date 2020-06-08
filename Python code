@@ -1,0 +1,46 @@
+import RPi.GPIO as gpio
+import time
+import requests
+
+gpio.setmode(gpio.BCM)
+
+GTRIG = 23
+GECHO = 18
+LED = 21
+
+gpio.setup(GTRIG, gpio.OUT)
+
+gpio.setwarnings(False)
+gpio.setup(LED, gpio.OUT)
+
+gpio.setup(GECHO, gpio.IN)
+
+try:
+    while True:
+        
+        gpio.output(GTRIG, False)
+        time.sleep(2)
+        
+        gpio.output(GTRIG, True)
+        time.sleep(0.00001)
+        gpio.output(GTRIG, False)
+        
+        while gpio.input(GECHO) == 0:
+            start = time.time()
+            
+        while gpio.input(GECHO) == 1:
+            end = time.time()
+            
+        duration = end - start
+        distance = duration * 17150
+        distance = round(distance + 1.15, 2)
+        
+        if distance <= 20 and distance >= 1:
+            gpio.output(LED, gpio.HIGH)
+            print("Distance: ", distance, "cm")         
+            requests.post('https://maker.ifttt.com/trigger/motion_detected_belly/with/key/b9oJTD_YEDXX_UYBK_XjIZ', params={"value1":"none","value2":"none","value3":"none"})
+        
+        time.sleep(2)
+        
+except KeyboardInterrupt:
+    gpio.cleanup()
